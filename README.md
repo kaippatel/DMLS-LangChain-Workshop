@@ -4,7 +4,7 @@ Welcome to this **LangChain Workshop** hosted by Kai Patel and Aryan Arya! 🚀
 
 This repository contains materials for learning and experimenting with LangChain.
 Throughout the workshop, we'll be walking through important concepts and theory,
-up to building a deployable RAG application that can be trained on one's own data.
+up to building a deployable RAG application that can be trained on your own data.
 
 ## 📌 Workshop Overview
 
@@ -19,35 +19,51 @@ up to building a deployable RAG application that can be trained on one's own dat
 ```
 dmls-langchain-workshop/
 │-- notebooks/       # Jupyter notebooks with hands-on examples
-│-- .env             # Store environment variables
+│-- .env             # Store environment variables (not provided but required for local setup)
 │-- .gitignore       # Ignore unnecessary or private files
 │-- LICENSE.txt      # Open-source MIT license
 │-- README.md        # This file (setup instructions)
-│-- requirements.txt # Dependencies for local setup
+│-- requirements.txt # Dependencies for running notebooks (required for local setup)
 ```
 
 ## 🔧 Setup Instructions
 
-### **Option 1: Running on Google Colab (Recommended)**
+### **🔑 First Steps**
 
-1. Click on the link below to open in Google Colab:
-   [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop)
-
-2. Run the first cell to install dependencies:
-   ```python
-   %pip install -r ../../requirements.txt
-   ```
-3. Obtain a Google Gemini API Key:
+1. Obtain a Google Gemini API Key:
 
    - Go to the Google AI Studio API Console: [Google AI Studio](https://aistudio.google.com/prompts/new_chat)
    - Sign in with your Google account and create a new API key.
    - Copy your API key and store it securely.
 
-4. Start exploring the notebooks!
+2. Start exploring the notebooks!
+
+### **📂 Option 1: Running on Google Colab (Recommended for Workshop)**
+
+Click the links below to open up notebooks directly in Google Colab:
+
+#### **Introduction to LangChain**
+
+- [📘 Introduction to LangChain](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/1_intro.ipynb)
+- [💬 Basic Conversation](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/2_basic_convo.ipynb)
+- [🔄 Continuous Conversation](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/3_continuous_convo.ipynb)
+
+#### **LangChain concepts**
+
+- [🧩 Templating](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_templates/basic_templates.ipynb)
+- [🔗 Chaining](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/3_chaining/1_basic_chaining.ipynb)
+
+#### **RAG concepts (i.e., text-splitting, embedding, vector stores, retriever)**
+
+.....
+
+#### **Final build: RAG pipeline that accepts TXT, PDF, DOCX, and CSV files**
+
+.....
 
 ---
 
-### **Option 2: Running Locally**
+### **🏗️ Option 2: Running Locally**
 
 #### **1️⃣ Clone the Repository**
 
@@ -86,7 +102,14 @@ pip install -r requirements.txt
 jupyter lab
 ```
 
-#### **5️⃣ Open Notebooks**
+#### **5️⃣ Select Kernel in Jupyter Notebook**
+
+- If running in VS Code, open the notebook (.ipynb) and select the local Python (venv) kernel from the top-right corner.
+- If running in Jupyter Lab, go to Kernel > Change Kernel > Select "Python (venv)".
+
+Before launching Jupyter, ensure your virtual environment is available as a kernel:
+
+#### **6️⃣ Open Notebooks**
 
 Navigate to the `notebooks/` directory and start exploring.
 
@@ -95,7 +118,8 @@ Navigate to the `notebooks/` directory and start exploring.
 ## 📜 Requirements
 
 For local setup, ensure you have **Python 3.9+** installed.
-If running in Google Colab, Python is already installed — just install dependencies using %pip install -r ../../requirements.txt.
+If running in Google Colab, Python is already installed and dependencies are managed
+on a per-notebook basis.
 
 ---
 
