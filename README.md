@@ -34,7 +34,7 @@ dmls-langchain-workshop/
 
    - Go to the Google AI Studio API Console: [Google AI Studio](https://aistudio.google.com/prompts/new_chat)
    - Sign in with your Google account and create a new API key.
-   - Copy your API key and store it securely.
+   - Copy your API key and store it in accessible and secure location (we will use this regularly throughout the workshop).
 
 2. Start exploring the notebooks!
 
@@ -50,8 +50,8 @@ Click the links below to open up notebooks directly in Google Colab:
 
 #### **LangChain concepts**
 
-- [🧩 Templating](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_templates/basic_templates.ipynb)
-- [🔗 Chaining](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/3_chaining/1_basic_chaining.ipynb)
+- [🧩 Templating](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_langchain_concepts/1_prompt_templates.ipynb)
+- [🔗 Chaining](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_langchain_concepts/2_chaining.ipynb)
 
 #### **RAG concepts (i.e., text-splitting, embedding, vector stores, retriever)**
 
@@ -96,20 +96,36 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### **4️⃣ Launch Jupyter Notebook or Jupyter Lab**
+#### **4️⃣ Set Up Your API Key in a .env File**
+
+Before running the notebooks, create a .env file in the root directory of the repository and add your Google API Key:
+
+```bash
+touch .env
+```
+
+Then open .env in a text editor and add the following line:
+
+```ini
+GOOGLE_API_KEY=your_google_api_key_here
+```
+
+Replace your_google_api_key_here with your actual key.
+
+#### **5️⃣ Launch Jupyter Notebook or Jupyter Lab**
 
 ```bash
 jupyter lab
 ```
 
-#### **5️⃣ Select Kernel in Jupyter Notebook**
+#### **6️⃣ Select Kernel in Jupyter Notebook**
 
 - If running in VS Code, open the notebook (.ipynb) and select the local Python (venv) kernel from the top-right corner.
 - If running in Jupyter Lab, go to Kernel > Change Kernel > Select "Python (venv)".
 
 Before launching Jupyter, ensure your virtual environment is available as a kernel:
 
-#### **6️⃣ Open Notebooks**
+#### **7️⃣ Open Notebooks**
 
 Navigate to the `notebooks/` directory and start exploring.
 
