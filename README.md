@@ -139,6 +139,14 @@ on a per-notebook basis.
 
 ---
 
+## 📝 Citations
+
+**CustomLoader** class adapted from:  
+Rungta, R. (2024). \*How to handle mixed file types in LangChain document loaders\*.  
+[https://medium.com/towards-agi/how-to-handle-mixed-file-types-in-langchain-document-loaders-b5c04e8f80ad](https://medium.com/towards-agi/how-to-handle-mixed-file-types-in-langchain-document-loaders-b5c04e8f80ad)
+
+---
+
 ## ⚡ Contribution & Feedback
 
 Pull requests and suggestions are welcome! Feel free to reach out if you encounter any issues.
@@ -152,3 +160,13 @@ This repository is licensed under the MIT License. Feel free to use and modify a
 ---
 
 Happy coding! 🚀
+
+run this from root (dmls-langchain-workshop) for backend
+
+PYTHONPATH=app uvicorn backend.main:app --reload
+
+./startup.sh
+
+https://medium.com/towards-agi/how-to-handle-mixed-file-types-in-langchain-document-loaders-b5c04e8f80ad
+
+cusotm loader
