@@ -1,0 +1,16 @@
+Alice: Good morning, team. Let's get started on our Q3 marketing campaign planning. 
+ Bob: Morning, Alice. First up, we need to finalize the campaign budget. I've drafted a spreadsheet with three scenarios (low, medium, high spend) and emailed it to everyone. 
+ Charlie: Got it—Bob, can you share that in the #marketing Slack channel by end of day? 
+Bob: Yes, I'll post it there by 5 PM today.
+ Alice: Great. Next, social media strategy. Dana, you were going to propose some new platforms for influencer outreach?
+ Dana: Right. I'm evaluating two micr
+ Emily: On it. I'll draft initial outreach emails and share a template by Thursday.
+ Alice: Finally, we need copy for the landing page. Frank, can you write the first draft?
+ Frank: I'll draft the copy by Monday morning and circulate it for feedback.
+ Alice: Awesome. Let's recap action items:
+ - **Bob**: Post budget scenarios spreadsheet to #marketing Slack by 5 PM today.
+  - **Dana**: Deliver influencer-network recommendation deck by Wednesday.
+  - **Emily**: Share outreach email template by Thursday.
+    - **Frank**: Draft landing-page copy by Monday morning.
+  
+Thanks, everyone—meeting adjourned!
