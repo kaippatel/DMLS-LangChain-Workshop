@@ -63,7 +63,7 @@ Click the links below to open up notebooks directly in Google Colab:
 #### **1️⃣ Clone the Repository**
 
 ```bash
-git clone https://github.com/kaippatel/DMLS-LangChain-Workshop.git
+git clone https://github.com/kaippatel/dmls-langchain-workshop.git
 cd dmls-langchain-workshop
 ```
 
