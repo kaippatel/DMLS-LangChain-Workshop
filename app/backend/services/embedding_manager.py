@@ -14,8 +14,7 @@ class EmbeddingManager:
 
     def __init__(self): 
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-        # self.index_name = str(os.getenv("PINECONE_INDEX_NAME", ""))
-        self.index_name = "pinecone-index"
+        self.index_name = os.getenv("PINECONE_INDEX_NAME")
         self.embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.embedding_dimensions = int(os.getenv("EMBEDDING_DIMENSIONS", 768))
 

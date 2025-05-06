@@ -12,7 +12,6 @@ class RedisManager:
 
     def __init__(self): 
         self.redis_client = get_redis_client()
-        print("Redis client connection info:", self.redis_client.connection_pool.connection_kwargs)
 
     def debug_session(self, session_id):
         key = f"chat_session:{session_id}:status"

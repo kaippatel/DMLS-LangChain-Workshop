@@ -3,20 +3,21 @@ import axios from "axios";
 import { Message } from "../types/types";
 import ChatMessage from "./ChatMessage";
 import DragDropFile from "./DragDropFile";
-import FilePreview from "./FilePreview";
+import FileCycler from "./FileCycler";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Chat = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [prompt, setPrompt] = useState<string>("");
-  // const [response, setResponse] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
+  const fileUploadingRef = useRef(isFileUploading);
   const [isResponseLoading, setResponseLoading] = useState<boolean>(false);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Generate session
   const generateSession = async () => {
@@ -38,96 +39,6 @@ const Chat = () => {
       sessionId = localStorage.getItem("session_id");
     }
     return sessionId;
-  };
-
-  useEffect(() => {
-    // Generate session on initial render
-    generateSession();
-  }, []);
-
-  useEffect(() => {
-    // Auto-scroll to bottom of messages
-    if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  // Upload user's file to temporary file directory
-  const handleUpload = async (uploadedFile: File) => {
-    setFiles((prevState) => [...prevState, uploadedFile]); // add file to local state
-
-    if (!uploadedFile) return;
-
-    const fileData = new FormData();
-    fileData.append("file", uploadedFile);
-
-    // Fetch session ID from localStorage
-    const sessionId = fetchSession();
-    fileData.append("session_id", sessionId as string);
-
-    console.log(fileData);
-
-    try {
-      setIsUploading(true); // Set loading state
-
-      // Upload file
-      const response = await axios.post(`${API_URL}/upload/`, fileData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      // setResponse(response.data.message || "Error uploading file!");
-    } catch (error) {
-      console.log("Prompt error:", error);
-    } finally {
-      setIsUploading(false); // Reset loading state
-    }
-  };
-
-  // Prompt LLM and get response
-  const handlePrompt = async () => {
-    try {
-      // Set user's message in local state
-      const userTimestamp = new Date().toISOString();
-      setMessages((prevState) => [
-        ...prevState,
-        {
-          role: "user",
-          content: prompt,
-          timestamp: userTimestamp,
-          isPlaceholder: false,
-        },
-      ]);
-
-      setPrompt(""); // Clear input field
-      setResponseLoading(true); // Set loading state
-
-      // Fetch session ID from localStorage
-      const sessionId = fetchSession();
-
-      // Prompt LLM
-      const response = await axios.post(`${API_URL}/prompt/`, {
-        session_id: sessionId,
-        prompt,
-        timestamp: userTimestamp,
-      });
-
-      // Set LLM's message in local state
-      const { llmResponse, timestamp } = response.data;
-      setMessages((prevState) => [
-        ...prevState,
-        {
-          role: "assistant",
-          content: llmResponse,
-          timestamp: timestamp,
-          isPlaceholder: false,
-        },
-      ]);
-    } catch (error) {
-      console.log("Prompt error:", error);
-    } finally {
-      setResponseLoading(false); // Reset loading state
-    }
   };
 
   // Format timestamp for message display
@@ -159,6 +70,153 @@ const Chat = () => {
     })} ${date.getDate()} ${timeStr}`;
   };
 
+  const waitUntil = (check: () => boolean) =>
+    new Promise<void>((resolve) => {
+      const id = setInterval(() => {
+        if (check()) {
+          clearInterval(id);
+          resolve();
+        }
+      }, 50); // poll every 50 ms – light and responsive
+    });
+
+  useEffect(() => {
+    // Maintain r
+    fileUploadingRef.current = isFileUploading;
+  }, [isFileUploading]);
+
+  useEffect(() => {
+    // Generate session on initial render
+    generateSession();
+  }, []);
+
+  useEffect(() => {
+    // Auto-scroll to bottom of messages
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    // Reset height of textarea
+    if (prompt === "" && textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  }, [prompt]);
+
+  // Upload user's file to temporary file directory
+  const handleUpload = async (uploadedFile: File) => {
+    setFiles((prevState) => [...prevState, uploadedFile]); // add file to local state
+
+    if (!uploadedFile) return;
+
+    const fileData = new FormData();
+    fileData.append("file", uploadedFile);
+
+    // Fetch session ID from localStorage
+    const sessionId = fetchSession();
+    fileData.append("session_id", sessionId as string);
+
+    console.log(fileData);
+
+    try {
+      setIsFileUploading(true); // Set loading state
+
+      // Upload file
+      await axios.post(`${API_URL}/upload/`, fileData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } catch (error) {
+      console.log("Prompt error:", error);
+    } finally {
+      setIsFileUploading(false); // Reset loading state
+    }
+  };
+
+  // Prompt LLM and stream response
+  const handlePrompt = async () => {
+    const plainPrompt = prompt.trim();
+    if (!plainPrompt) return;
+
+    const userTimestamp = new Date().toISOString();
+    const sessionId = fetchSession();
+
+    // Add user message and LLM thinking placeholder
+    setMessages((prevState) => [
+      ...prevState,
+      {
+        role: "user",
+        content: plainPrompt,
+        timestamp: userTimestamp,
+        isPlaceholder: false,
+      },
+      {
+        role: "assistant",
+        content: "",
+        timestamp: userTimestamp,
+        isPlaceholder: true,
+      },
+    ]);
+
+    setPrompt(""); // clear input
+    setResponseLoading(true); // set LLM response loading
+
+    // Wait until file has uploaded
+    if (fileUploadingRef.current) {
+      await waitUntil(() => fileUploadingRef.current === false);
+    }
+
+    try {
+      // Prompt LLM and stream tokens
+      console.log("here");
+      const response = await fetch(`${API_URL}/prompt-stream/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId,
+          prompt,
+          timestamp: userTimestamp,
+        }),
+      });
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      if (reader) {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          // Decode
+          accumulated += decoder
+            .decode(value, { stream: true })
+            .replace(/^data:\s*/, "");
+
+          // Update assistant message as streaming
+          setMessages((prevState) => {
+            const messages = [...prevState];
+            const lastIdx = messages.length - 1;
+            if (messages[lastIdx]?.role === "assistant") {
+              messages[lastIdx] = {
+                ...messages[lastIdx],
+                content: accumulated,
+                isPlaceholder: false,
+              };
+            }
+            return messages;
+          });
+        }
+      }
+    } catch (error) {
+      console.log("Prompt stream error:", error);
+    } finally {
+      setResponseLoading(false);
+    }
+  };
+
   return (
     <>
       <DragDropFile
@@ -178,23 +236,17 @@ const Chat = () => {
                   timestamp={formatTimestamp(message.timestamp)}
                 />
               ))}
-            {messages.length !== 0 && isResponseLoading && (
-              <ChatMessage
-                role="assistant"
-                content=""
-                timestamp=""
-                isPlaceholder={true}
-              />
-            )}
+
             <div ref={messageEndRef}></div>
           </div>
           <hr className="text-light" />
         </section>
         <section className="chat-section">
           <div className="chat-input-container">
-            <input
+            <textarea
+              ref={textareaRef}
               className="chat-input"
-              type="text"
+              rows={1}
               placeholder="Type your message..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -204,6 +256,7 @@ const Chat = () => {
                   prompt.trim() !== "" &&
                   !isResponseLoading
                 ) {
+                  e.preventDefault();
                   handlePrompt();
                 }
               }}
@@ -211,6 +264,8 @@ const Chat = () => {
             <div id="btn-row">
               <button
                 id="paperclip-icon-wrapper"
+                className="icon-btn"
+                data-tip="Attach a file"
                 onClick={() => fileInputRef.current?.click()}
                 type="button"
               >
@@ -243,8 +298,6 @@ const Chat = () => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
                   fill="currentColor"
                   className="bi bi-arrow-up-circle-fill"
                   viewBox="0 0 16 16"
@@ -256,17 +309,9 @@ const Chat = () => {
           </div>
         </section>
         <section id="files-section">
-          {files &&
-            files.map((file) => (
-              <FilePreview
-                file={file}
-                isUploading={isUploading}
-                progress={isUploading ? undefined : 100}
-              />
-            ))}
+          <FileCycler files={files} />
         </section>
       </main>
-      <footer id="pg-footer"></footer>
     </>
   );
 };

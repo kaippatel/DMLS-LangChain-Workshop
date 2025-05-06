@@ -1,21 +1,19 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from backend.services.chat_manager import ChatManager
-from backend.models.schemas import PromptRequest, LLMResponse
+from backend.models.schemas import PromptRequest
 from backend.services.redis_manager import RedisManager
 
 router = APIRouter()
 
-@router.post("/prompt/")
-def prompt_llm(request: PromptRequest) -> LLMResponse: 
-    print(request.session_id)
-    redis_manager = RedisManager()
-    print(redis_manager.debug_session(request.session_id))
-    if not redis_manager.is_session_valid(request.session_id): 
+@router.post("/prompt-stream/")
+def prompt_stream(request: PromptRequest):
+    redis = RedisManager()
+    if not redis.is_session_valid(request.session_id):
         raise HTTPException(status_code=400, detail="Invalid session")
 
-    return ChatManager.prompt_llm(
-        session_id=request.session_id, 
-        prompt=request.prompt, 
+    return ChatManager.stream_llm(
+        session_id=request.session_id,
+        prompt=request.prompt,
         timestamp=request.timestamp
     )
 

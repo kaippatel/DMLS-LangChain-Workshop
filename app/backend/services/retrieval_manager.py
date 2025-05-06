@@ -18,14 +18,13 @@ class RetrievalManager:
 
     def __init__(self): 
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-        # self.index_name = str(os.getenv("PINECONE_INDEX_NAME", ""))
-        self.index_name = "pinecone-index"
+        self.index_name = os.getenv("PINECONE_INDEX_NAME")
         self.embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         self.vector_store = PineconeVectorStore(
             index=self.pc.Index(self.index_name), 
             embedding=self.embedding_model
         )
-        self.search_type = SEARCH_TYPES[1]
+        self.search_type = SEARCH_TYPES[2]
         self.search_kwargs = SEARCH_KWARGS[self.search_type]
 
     def retrieve_documents(self, prompt: str): 

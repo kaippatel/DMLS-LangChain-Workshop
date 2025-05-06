@@ -9,15 +9,8 @@ const ChatMessage: React.FC<Message> = ({
   isPlaceholder,
 }) => {
   return (
-    <div
-      key={`msg-${timestamp}`}
-      className={`chat-msg ${
-        role === "user"
-          ? "float-end justify-content-end"
-          : "justify-content-start"
-      }`}
-    >
-      <div className="msg-img-container rounded-circle">
+    <div className={`chat-msg ${role}`}>
+      <div className="msg-img-container">
         {role === "user" ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -37,30 +30,10 @@ const ChatMessage: React.FC<Message> = ({
           <small className="msg-role">{role}</small>
           <small className="msg-time">{timestamp}</small>
         </span>
+
         <div className="msg-text">
           {isPlaceholder ? (
-            <div className="placeholder-glow">
-              <span
-                className="placeholder d-block mb-2"
-                style={{ width: "300%" }}
-              ></span>
-              <span
-                className="placeholder d-block mb-2"
-                style={{ width: "250%" }}
-              ></span>
-              <span
-                className="placeholder d-block mb-2"
-                style={{ width: "175%" }}
-              ></span>
-              <span
-                className="placeholder d-block mb-2"
-                style={{ width: "225%" }}
-              ></span>
-              <span
-                className="placeholder d-block"
-                style={{ width: "275%" }}
-              ></span>
-            </div>
+            <small className="glow-word">thinking&nbsp;…</small>
           ) : (
             <small>{content}</small>
           )}

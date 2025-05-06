@@ -1,67 +1,76 @@
 import os
-from backend.models.schemas import LLMResponse
 from backend.services.embedding_manager import EmbeddingManager
 from backend.services.retrieval_manager import RetrievalManager
 from langchain_google_genai import GoogleGenerativeAI
 from backend.services.redis_manager import RedisManager
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
+from fastapi.responses import StreamingResponse
 
 """Handle logic for chat interactions between LLM and user"""
 
 class ChatManager: 
 
-    def __init__(self): 
-        pass
-
     @staticmethod
-    def prompt_llm(session_id: str, prompt: str, timestamp: str) -> LLMResponse: 
-        """
-        1. Store user's message in Redis
-        2. Retrieve relevant documents from vector store 
-        3. Format retrieved documents as context for final prompt
-        4. Generate LLM response (store in Redis)
-        """
-
-        # ------------------Store user's message in Redis---------------
-
-        redis_manager = RedisManager()
-        redis_manager.add_message(
+    def stream_llm(session_id: str, prompt: str, timestamp: str) -> StreamingResponse: 
+        
+        # Store user's message in Redis      
+        redis = RedisManager()
+        redis.add_message(
             session_id=session_id, 
             role="user", 
             content=prompt, 
             timestamp=timestamp
         )
-
-        # ------------------Retrieve relevant documents from vector store---------------
-
-        retriever_manager = RetrievalManager()
-        result = retriever_manager.retrieve_documents(prompt)
-        documents = result["documents"]
-
-        # ------------------Format documents as context---------------
-
-        context = "\n\n".join([doc["page_content"] for doc in documents])
-        final_prompt = f"""You are an assistant tasked with using the provided context to answer the question below **if it's relevant**. 
-        If the question is casual, conversational, or unrelated to the context, respond naturally without relying on the context.
-
-        Context:
-        {context}
-
-        Question: {prompt}
-        Answer:
-        """
-
-        # ------------------Generate LLM response---------------
-
-        llm = GoogleGenerativeAI(model="gemini-1.5-flash")
-        response = llm.invoke(final_prompt)
-
-        message, timestamp = redis_manager.add_message(
-            session_id=session_id, 
-            role="assistant", 
-            content=response
+        
+        # Instantiate retriever and llm
+        retriever = RetrievalManager()
+        llm = GoogleGenerativeAI(
+            model="gemini-1.5-flash", 
+            streaming=True, 
+            temperature=0.2
         )
 
-        return LLMResponse(llmResponse=message, timestamp=timestamp)
+        # Define prompt template 
+        rag_template = ChatPromptTemplate.from_messages([
+            ("system", """You are an assistant named Kai Patel. Use the provided context to answer the question **if relevant**. 
+                Otherwise, if the question is casual, conversational, or unrelated, respond naturally without relying on the context."""),
+            ("human", "Context:\n{context}\n\nQuestion: {question}")
+        ])
+
+        # Runnables
+        retrieve_context = RunnableLambda(
+            lambda query: "\n\n".join([doc["page_content"] 
+                for doc in retriever.retrieve_documents(query)["documents"]]
+            )   
+        )
+        format_rag_prompt = RunnableLambda(lambda inputs: rag_template.format_prompt(**inputs))
+
+        # Assemble RAG pipeline 
+        chain = (
+            {
+                "context": retrieve_context,
+                "question": RunnablePassthrough()
+            }
+            | format_rag_prompt 
+            | llm
+        )
+
+        # Runnable to stream tokens
+        def stream_tokens(prompt): 
+            response = []
+            for chunk in chain.stream(prompt): 
+                response.append(chunk)
+                yield f"data: {chunk}\n\n"
+            
+            # Add final repsonse to redis
+            redis.add_message(        
+                session_id=session_id, 
+                role="assistant", 
+                content="".join(response)
+            )
+
+        return StreamingResponse(stream_tokens(prompt), media_type="text/event-stream")
 
     @staticmethod
     def upload_file(file): 

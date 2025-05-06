@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 _redis_client = redis.Redis(
-        host="useful-alien-30818.upstash.io",
+        host=os.getenv("REDIS_UPSTASH_HOST"),
         port=6379,
         password=os.getenv("REDIS_UPSTASH_PASSWORD"),
         ssl=True, 

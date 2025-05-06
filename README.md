@@ -8,16 +8,16 @@ up to building a deployable RAG application that can be trained on your own data
 
 ## 📌 Workshop Overview
 
-- Introduction to LangChain (i.e., syntax, basic convo)
 - LangChain concepts (i.e., templating, chaining)
 - Overview of Retrieval-Augmented Generation (RAG) architecture and use cases
 - RAG concepts (i.e., text-splitting, embedding, vector stores, retriever)
-- Final build: RAG pipeline that accepts TXT, PDF, DOCX, and CSV files
+- Final build (app/ directory): RAG pipeline that accepts TXT, PDF, DOCX, and CSV files using Redis Upstash and Pinecone
 
 ## 📂 Project Structure
 
 ```
 dmls-langchain-workshop/
+|-- app/             # Contains source code for RAG app that enables uploading files
 │-- notebooks/       # Jupyter notebooks with hands-on examples
 │-- .env             # Store environment variables (not provided but required for local setup)
 │-- .gitignore       # Ignore unnecessary or private files
@@ -42,24 +42,19 @@ dmls-langchain-workshop/
 
 Click the links below to open up notebooks directly in Google Colab:
 
-#### **Introduction to LangChain**
-
-- [📘 Introduction to LangChain](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/1_intro.ipynb)
-- [💬 Basic Conversation](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/2_basic_convo.ipynb)
-- [🔄 Continuous Conversation](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/1_basic/3_continuous_convo.ipynb)
-
 #### **LangChain concepts**
 
-- [🧩 Templating](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_langchain_concepts/1_prompt_templates.ipynb)
-- [🔗 Chaining](https://colab.research.google.com/github/kaippatel/DMLS-LangChain-Workshop/blob/master/notebooks/2_langchain_concepts/2_chaining.ipynb)
+- [🧩 Templating](https://colab.research.google.com/github/kaippatel/dmls-langchain-workshop/blob/master/notebooks/1_langchain_concepts/1_prompt_templates.ipynb)
+- [🔗 Chaining](https://colab.research.google.com/github/kaippatel/dmls-langchain-workshop/blob/master/notebooks/1_langchain_concepts/2_chaining.ipynb)
 
 #### **RAG concepts (i.e., text-splitting, embedding, vector stores, retriever)**
 
-.....
+- [RAG Text Splitting](https://colab.research.google.com/github/kaippatel/dmls-langchain-workshop/blob/master/notebooks/2_rag/RAG_Text_Splitting.ipynb)
+- [RAG Intro to Embeddings](https://colab.research.google.com/github/kaippatel/dmls-langchain-workshop/blob/master/notebooks/2_rag/RAG_intro_to_Embeddings.ipynb/)
 
-#### **Final build: RAG pipeline that accepts TXT, PDF, DOCX, and CSV files**
+---
 
-.....
+**NOTE: you will need to upload 1984 to work with the RAG notebooks in google collab when prompted. It is located in the 2_rag/ directory**
 
 ---
 
@@ -96,21 +91,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### **4️⃣ Set Up Your API Key in a .env File**
+#### **4️⃣ Set Up Your .env File**
 
-Before running the notebooks, create a .env file in the root directory of the repository and add your Google API Key:
-
-```bash
-touch .env
-```
-
-Then open .env in a text editor and add the following line:
-
-```ini
-GOOGLE_API_KEY=your_google_api_key_here
-```
-
-Replace your_google_api_key_here with your actual key.
+Before running the notebooks, rename your root .env.example file to .env and populate it with your Google API Key
 
 #### **5️⃣ Launch Jupyter Notebook or Jupyter Lab**
 
@@ -128,6 +111,26 @@ Before launching Jupyter, ensure your virtual environment is available as a kern
 #### **7️⃣ Open Notebooks**
 
 Navigate to the `notebooks/` directory and start exploring.
+
+#### **8️⃣ Run the RAG app**
+
+1.  There are 2 .env.example files located in your frontend/ and backend/ directories. Rername each to .env and populate values for backend/.env.
+
+- Head over to Redis Upstash and obtain your host name and password.
+
+  https://upstash.com/
+
+- Head over to the Pinecone console and create an index named "pinecone-index". Populate this in your .env file.
+
+  https://www.pinecone.io/?utm_term=pinecone%20database&utm_campaign=brand-us-p&utm_source=adwords&utm_medium=ppc&hsa_acc=3111363649&hsa_cam=16223687665&hsa_grp=133738612775&hsa_ad=582256510975&hsa_src=g&hsa_tgt=kwd-1628011569744&hsa_kw=pinecone%20database&hsa_mt=p&hsa_net=adwords&hsa_ver=3&gad_source=1&gad_campaignid=16223687665&gbraid=0AAAAABrtGFDlGWo2TwwsWj2RPhufqfRUw&gclid=Cj0KCQjw5ubABhDIARIsAHMighbzTXSq4o1fXCA79V-ksLB5RMuCsWVkR00LgtNQjbB5kpusSAx_7IwaAq2CEALw_wcB
+
+2.  To run the app/, run this command at the root of your project (dmls-langchain-workshop NOT app)
+
+    ```bash
+    ./startup.sh
+    ```
+
+**NOTE: You may notice that files you upload are populated into the local directory "uploaded_files" when using the chatbot. Feel free to host these elsewhere or make any other changes in making this your own RAG app. For instance, you might add conversational memory.... - Kai**
 
 ---
 
@@ -160,13 +163,3 @@ This repository is licensed under the MIT License. Feel free to use and modify a
 ---
 
 Happy coding! 🚀
-
-run this from root (dmls-langchain-workshop) for backend
-
-PYTHONPATH=app uvicorn backend.main:app --reload
-
-./startup.sh
-
-https://medium.com/towards-agi/how-to-handle-mixed-file-types-in-langchain-document-loaders-b5c04e8f80ad
-
-cusotm loader
