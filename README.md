@@ -114,13 +114,13 @@ Navigate to the `notebooks/` directory and start exploring.
 
 #### **8️⃣ Run the RAG app**
 
-1.  There are 2 .env.example files located in your frontend/ and backend/ directories. Rername each to .env and populate values for backend/.env.
+1.  There are 2 .env.example files located in your frontend/ and backend/ directories. Rename each to .env and populate the values for backend/.env:
 
 - Head over to Redis Upstash and obtain your host name and password.
 
   https://upstash.com/
 
-- Head over to the Pinecone console and create an index named "pinecone-index". Populate this in your .env file.
+- Head over to the Pinecone console and create an index.
 
   https://www.pinecone.io/?utm_term=pinecone%20database&utm_campaign=brand-us-p&utm_source=adwords&utm_medium=ppc&hsa_acc=3111363649&hsa_cam=16223687665&hsa_grp=133738612775&hsa_ad=582256510975&hsa_src=g&hsa_tgt=kwd-1628011569744&hsa_kw=pinecone%20database&hsa_mt=p&hsa_net=adwords&hsa_ver=3&gad_source=1&gad_campaignid=16223687665&gbraid=0AAAAABrtGFDlGWo2TwwsWj2RPhufqfRUw&gclid=Cj0KCQjw5ubABhDIARIsAHMighbzTXSq4o1fXCA79V-ksLB5RMuCsWVkR00LgtNQjbB5kpusSAx_7IwaAq2CEALw_wcB
 
